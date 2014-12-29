@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">RockScissorsPaper</string>
+    <string name="action_settings">Settings</string>
+    
+    <string name="create_game_label" >创建游戏</string>
+    <string name="my_ip_label" >你的IP是：</string>
+    <string name="defaut_ip" >0.0.0.0</string>
+    <string name="refresh_ip" >刷新IP</string>
+    <string name="wifi_host_waiting" >等待其他玩家加入</string>
+    <string name="wifi_connect_time_out" >链接超时</string>
+    <string name="join_game_label" >加入游戏</string>
+    <string name="opponent_ip_label" >请输入创建游戏的IP：</string>
+    
+
+</resources>
