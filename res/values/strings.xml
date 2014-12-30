@@ -12,6 +12,7 @@
     <string name="wifi_connect_time_out" >链接超时</string>
     <string name="join_game_label" >加入游戏</string>
     <string name="opponent_ip_label" >请输入创建游戏的IP：</string>
+    <string name="connecting" >正在连接</string>
     
 
 </resources>

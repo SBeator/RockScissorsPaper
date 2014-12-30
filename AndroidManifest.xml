@@ -33,6 +33,11 @@
             android:label="@string/create_game_label"
             android:screenOrientation="portrait" >
         </activity>
+        <activity
+            android:name="com.example.rockscissorspaper.connect.WifiClientConnectActivity"
+            android:label="@string/join_game_label"
+            android:screenOrientation="portrait" >
+        </activity>
     </application>
 
 </manifest>

@@ -1,6 +1,8 @@
 package com.example.rockscissorspaper;
 
+import com.example.rockscissorspaper.connect.WifiClientConnectActivity;
 import com.example.rockscissorspaper.connect.WifiHostConnectActivity;
+
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -27,7 +29,8 @@ public class WelcomeActivity extends ActionBarActivity {
     }
     
     public void onClickJoinGame(View view){
-    	
+    	Intent intent = new Intent(this, WifiClientConnectActivity.class);
+    	startActivity(intent);
     }
 
 
