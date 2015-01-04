@@ -22,6 +22,12 @@ public class WifiClientConnectActivity extends WifiConnectActivity{
         setContentView(R.layout.activity_wifi_client);
         
         ipText = (EditText) findViewById(R.id.host_ip);
+        
+        String myIp = WiFiService.getHostAdress(this);
+        if(!myIp.equals("0.0.0.0")){
+        	ipText.setText(myIp.substring(0, myIp.lastIndexOf(".") + 1));
+        }
+  
     }
 	
 	public void onJoinGame(View view){

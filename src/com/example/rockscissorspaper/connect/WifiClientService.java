@@ -21,7 +21,10 @@ public class WifiClientService extends WiFiService {
 		
 		Socket socket = null;
 		try {
+			System.out.println("WifiClientService.connectSpecific() start, address:" + this.serverIP + ":" + Global.getInstance().WIFI_PORT);
 			socket = new Socket(this.serverIP, Global.getInstance().WIFI_PORT);
+			System.out.println("WifiClientService.connectSpecific() success, address:" + socket.getRemoteSocketAddress());
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
