@@ -38,6 +38,11 @@
             android:label="@string/join_game_label"
             android:screenOrientation="portrait" >
         </activity>
+        <activity
+            android:name="com.example.rockscissorspaper.game.MainGame"
+            android:label="@string/main_game"
+            android:screenOrientation="portrait" >
+        </activity>
     </application>
 
 </manifest>

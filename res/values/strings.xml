@@ -13,6 +13,23 @@
     <string name="join_game_label" >加入游戏</string>
     <string name="opponent_ip_label" >请输入创建游戏的IP：</string>
     <string name="connecting" >正在连接</string>
+    <string name="main_game" >石头剪子布</string>
     
-
+    <string name="rock_paper_scissors" >石头剪子布</string>
+    <string name="rock_paper_scissors_descroption" >请选择你需要出的手势：</string>
+    <string name="rock" >石头</string>
+    <string name="paper" >布</string>
+    <string name="scissors" >剪刀</string>
+    <string name="ok" >确定</string>
+    <string name="no_choose_warning" >请选择你需要出的手势之后再点确定</string>
+    <string name="result_waitting" >等待对手出手</string>
+    <string name="result_draw" >平了</string>
+    <string name="result_win" >你赢了</string>
+    <string name="result_lose" >你输了</string>
+    <string name="result_my_choise" >你出的是：</string>
+    <string name="result_opponent_choise" >对手出的是：</string>
+    
+    <string name="opponent_not_choise" >你的对手没有出手</string>
+    <string name="connect_lose" >链接断开</string>
+    
 </resources>

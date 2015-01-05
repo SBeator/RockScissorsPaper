@@ -3,6 +3,7 @@ package com.example.rockscissorspaper.connect;
 import com.example.rockscissorspaper.Global;
 import com.example.rockscissorspaper.R;
 import com.example.rockscissorspaper.WelcomeActivity;
+import com.example.rockscissorspaper.game.MainGame;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -39,7 +40,7 @@ public abstract class WifiConnectActivity extends Activity implements DialogInte
 		wiFiService = service;
 		
 		final ProgressDialog dialog = ProgressDialog.show(this, "", getSpecificInfoString(), true, true, this);
-		final Intent intent = new Intent(this, WelcomeActivity.class);
+		final Intent intent = new Intent(this, MainGame.class);
 		
 		final Activity thisActivity = this;
 		Thread thread = new Thread(new Runnable() {
