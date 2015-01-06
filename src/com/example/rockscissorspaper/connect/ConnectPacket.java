@@ -1,5 +1,7 @@
 package com.example.rockscissorspaper.connect;
 
-public class ConnectPacket {
+import java.io.Serializable;
+
+public class ConnectPacket implements Serializable{
 	public int choiseIndex;
 }

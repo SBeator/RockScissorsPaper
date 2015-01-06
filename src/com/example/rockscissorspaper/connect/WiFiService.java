@@ -17,7 +17,7 @@ import android.text.format.Formatter;
 
 public abstract class WiFiService implements RemoteService {
 	
-	protected final int helloMessage = 1000;
+	protected final int helloMessage = 100;
 	
 	protected Socket socket = null;
 	
@@ -60,21 +60,28 @@ public abstract class WiFiService implements RemoteService {
 	}
 	
 	public boolean isConnected() {
-		if(socket != null)
+		if(socket != null && this.isConnected)
 			return socket.isConnected();
 		else
 			return false;
 	}
 	
 	public void send(ConnectPacket gamePacket) {
+		System.out.println("Run send");
 		toSendQueue.offer(gamePacket);
 	}
 	
 	public ConnectPacket receive() {
-		if(!receivedQueue.isEmpty())
+		System.out.println("Run receive");
+		if(!receivedQueue.isEmpty()){
+			System.out.println("receive something");
 			return receivedQueue.poll();
-		else
+		}
+		else{
+			System.out.println("receive null");
 			return null;
+		}
+			
 	}
 
 	public static String getHostAdress(Context context) {
@@ -97,8 +104,11 @@ public abstract class WiFiService implements RemoteService {
 		public void run() {
 			isAlive = true;
 			try {
+				System.out.println("start SendingThread");
 				while(!isConnected && isAlive)
 					Thread.sleep(250);
+				
+				System.out.println("SendingThread: Sending connected");
 				
 				if(isAlive) {
 					outputStream = socket.getOutputStream();
@@ -107,10 +117,15 @@ public abstract class WiFiService implements RemoteService {
 				ConnectPacket packet;
 			
 				while(isAlive) {
+					System.out.println("SendingThread: try send");
+					
 					if(!toSendQueue.isEmpty()) {
+						System.out.println("SendingThread: Queue length:" + toSendQueue.size());
 						packet = toSendQueue.poll();
 						objectOutputStream.writeObject(packet);
 						objectOutputStream.flush();
+						System.out.println("SendingThread: Sended! choise:" + packet.choiseIndex + "Queue length:" + toSendQueue.size());
+						
 					}
 					
 					Thread.sleep(500);
@@ -144,21 +159,31 @@ public abstract class WiFiService implements RemoteService {
 		public void run() {
 			isAlive = true;
 			try {
+				System.out.println("start ReceivingThread");
 				while(!isConnected && isAlive)
 					Thread.sleep(250);
+				
+				System.out.println("ReceivingThread: Receiving connected");
 
 				if(isAlive) {
+					System.out.println("ReceivingThread: getInputStream");
 					inputStream = socket.getInputStream();
+					System.out.println("ReceivingThread: create objectInputStream");
 					objectInputStream = new ObjectInputStream(inputStream);
+					System.out.println("ReceivingThread: created objectInputStream");
 				}
 				ConnectPacket packet = null;
 				
 				while(isAlive) {
 					
+					System.out.println("ReceivingThread: try readObject");
 					packet = (ConnectPacket) objectInputStream.readObject();
+					System.out.println("ReceivingThread: readed object");
 					
-					if(packet != null)
+					if(packet != null){
 						receivedQueue.offer(packet);
+						System.out.println("ReceivingThread: received! choise:" + packet.choiseIndex + " Queuelength:" + receivedQueue.size());
+					}
 					
 					Thread.sleep(500);
 				}
@@ -198,11 +223,24 @@ public abstract class WiFiService implements RemoteService {
 						InputStream input = socket.getInputStream();
 						OutputStream output = socket.getOutputStream();
 						
+						System.out.println("ConnectingThread: send hello message");
 						output.write(helloMessage);	// send your DEVICE_TYPE
 						
+						System.out.println("ConnectingThread: recieve hello message");
 						int hello = input.read();
 						if(hello == helloMessage) {
+							System.out.println("ConnectingThread: hello message is correct");
+
 							isAlive = true;
+						}else{
+							System.out.println("ConnectingThread: hello message is wrong:" + hello);
+							System.out.println("ConnectingThread: recieve something:" + input.read());
+							System.out.println("ConnectingThread: recieve something:" + input.read());
+							System.out.println("ConnectingThread: recieve something:" + input.read());
+							socket.close();
+							socket = null;
+							
+							isAlive = false;
 						}
 						
 					} catch (IOException e1) {
@@ -213,6 +251,10 @@ public abstract class WiFiService implements RemoteService {
 						}
 						socket = null;
 						e1.printStackTrace();
+						
+						isAlive = false;
+						
+						System.out.println("ConnectingThread: IOException:" + e1.toString());
 					}
 				}
 				
