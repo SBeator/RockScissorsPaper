@@ -26,8 +26,12 @@
     <string name="result_draw" >平了</string>
     <string name="result_win" >你赢了</string>
     <string name="result_lose" >你输了</string>
-    <string name="result_my_choise" >你出的是：</string>
-    <string name="result_opponent_choise" >对手出的是：</string>
+    <string name="result_my_choise" >你出的是：%s</string>
+    <string name="result_opponent_choise" >对手出的是：%s</string>
+    <string name="result_label_format" >第%1$d局</string>
+    <string name="total_result_label" >总比分</string>
+    <string name="total_result_format" >胜：%1$d 平：%2$d 负：%3$d </string>
+    <string name="punch_error" >程序出错啦，请重新出拳</string>
     
     <string name="opponent_not_choise" >你的对手没有出手</string>
     <string name="connect_lose" >链接断开</string>

@@ -13,7 +13,9 @@ import com.example.rockscissorspaper.connect.RemoteService;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -29,9 +31,27 @@ public class MainGame extends Activity {
 	private Global global;
 	
 	private List<RadioButton> radioList;
-	 
 	
-	public MainGame(){
+	private TextView resultLabel;
+	private TextView result;
+	private TextView myChoise;
+	private TextView hisChoise;
+	private TextView totalResultLabel;
+	private TextView totalResult;
+	
+	private int gameCount;
+	private int winCount;
+	private int loseCount;
+	private int drawCount;
+	
+	private Handler resultHandler;
+	
+	@Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.activity_main_game);
+        
         choiseNamesMap = new HashMap<Integer, Integer>();
         choiseNamesMap.put(0, R.string.rock);
         choiseNamesMap.put(1, R.string.scissors);
@@ -41,20 +61,29 @@ public class MainGame extends Activity {
         resultsMap.put(0, R.string.result_draw);    
         resultsMap.put(1, R.string.result_lose);  
         resultsMap.put(2, R.string.result_win);  
-	}
-	
-	@Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_main_game);
         
         this.radioList = new ArrayList<RadioButton>();
         this.radioList.add((RadioButton) this.findViewById(R.id.radioButton1));
         this.radioList.add((RadioButton) this.findViewById(R.id.radioButton2));
         this.radioList.add((RadioButton) this.findViewById(R.id.radioButton3));
         
+        this.resultLabel = (TextView) this.findViewById(R.id.result_label);
+        this.result = (TextView) this.findViewById(R.id.result);
+        this.myChoise = (TextView) this.findViewById(R.id.your_choise);
+        this.hisChoise = (TextView) this.findViewById(R.id.his_choise);
+        this.totalResultLabel = (TextView) this.findViewById(R.id.total_result_label);
+        this.totalResult = (TextView) this.findViewById(R.id.total_result);
+        
+        this.gameCount = 0;
+        this.drawCount = 0;
+        this.winCount = 0;
+        this.loseCount = 0;
+        
         this.global = Global.getInstance();
+        
+        this.resultHandler = new ResultHandler();
+        
+        this.setResultVisibility(View.INVISIBLE);
     }
 	
 	public void onClickOk(View view){
@@ -67,11 +96,15 @@ public class MainGame extends Activity {
 			}
 		}
 		
-		if(choiseIndex == -1){
+		if(choiseNamesMap.containsKey(choiseIndex)){
+			punch(choiseIndex);
+		}else{
 			Toast.makeText(this, R.string.no_choose_warning, Toast.LENGTH_LONG).show();
 			return;
 		}
-		
+	}
+
+	private void punch(int choiseIndex) {
 		final ProgressDialog dialog = ProgressDialog.show(this, "", this.getText(R.string.result_waitting), true, true);
 		final MainGame thisActivity = this;
 		final int myChoise = choiseIndex;
@@ -89,14 +122,15 @@ public class MainGame extends Activity {
 				int trialsCounter = 0;
 				int COUNTER_MAX = 20;
 				while(remoteService.isConnected() && trialsCounter < COUNTER_MAX){
-					ConnectPacket otherGamePacket = thisActivity.global.remoteService.receive();
+					ConnectPacket hisGamePacket = thisActivity.global.remoteService.receive();
 					
-					if(otherGamePacket != null){
+					if(hisGamePacket != null && choiseNamesMap.containsKey(hisGamePacket.choiseIndex)){
 						dialog.dismiss();
 						
-						Looper.prepare();
-						Toast.makeText(getApplicationContext(), "my:" + myChoise + " other:" + otherGamePacket.choiseIndex, Toast.LENGTH_LONG).show();
-						Looper.loop();
+						Message resultMessage = resultHandler.obtainMessage();
+						resultMessage.arg1 = myChoise;
+						resultMessage.arg2 = hisGamePacket.choiseIndex;
+						resultMessage.sendToTarget();
 						
 						success = true;
 						break;
@@ -129,5 +163,69 @@ public class MainGame extends Activity {
 		});
 
 		thread.start();
+	}
+
+	private void showResult(final int myChoise, final int hisChoise) {
+		
+		boolean resultRight = true;
+		
+		int winLoseFlag = (3 + myChoise - hisChoise) % 3;
+		switch(winLoseFlag){
+		case 0:
+			this.drawCount++;
+			break;
+		case 1:
+			this.loseCount++;
+			break;
+		case 2:
+			this.winCount++;
+			break;
+		default:
+			resultRight = false;
+			break;
+		}
+		
+		if(resultRight){
+			this.gameCount++;
+			String label = String.format(this.getString(R.string.result_label_format), this.gameCount);
+			this.resultLabel.setText(label);
+			
+			this.result.setText(resultsMap.get(winLoseFlag));
+			
+			String myChoiseResult = String.format(
+					this.getString(R.string.result_my_choise), 
+					this.getString(choiseNamesMap.get(myChoise)));
+			this.myChoise.setText(myChoiseResult);
+			
+			String hisChoiseResult = String.format(
+					this.getString(R.string.result_opponent_choise), 
+					this.getString(choiseNamesMap.get(hisChoise)));
+			this.hisChoise.setText(hisChoiseResult);
+			
+			String totalResult = String.format(
+					this.getString(R.string.total_result_format), 
+					this.winCount,
+					this.drawCount,
+					this.loseCount);
+			this.totalResult.setText(totalResult);
+
+			this.setResultVisibility(View.VISIBLE);
+		}else{
+			this.setResultVisibility(View.INVISIBLE);
+			this.result.setText(R.string.punch_error);
+		}
+	}
+	
+	private void setResultVisibility(int visibility){
+		this.resultLabel.setVisibility(visibility);
+		this.myChoise.setVisibility(visibility);
+		this.hisChoise.setVisibility(visibility);
+		this.totalResultLabel.setVisibility(visibility);
+	}
+	
+	private class ResultHandler extends Handler{
+		public void handleMessage (Message msg) {  
+			showResult(msg.arg1, msg.arg2) ;
+        } 
 	}
 }
